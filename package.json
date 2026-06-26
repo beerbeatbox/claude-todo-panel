@@ -1,0 +1,87 @@
+{
+  "name": "claude-todo-panel",
+  "displayName": "Claude Todo Panel",
+  "description": "A pinned sidebar that shows Claude Code's live todo list, synced from a hook.",
+  "version": "0.0.1",
+  "publisher": "beer",
+  "private": true,
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "claudeTodo",
+          "title": "Claude Todos",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "claudeTodo": [
+        {
+          "id": "claudeTodo.list",
+          "name": "Todos",
+          "type": "tree"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "claudeTodo.refresh",
+        "title": "Claude Todos: Refresh",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "claudeTodo.openFile",
+        "title": "Claude Todos: Open Source File",
+        "icon": "$(go-to-file)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "claudeTodo.refresh",
+          "when": "view == claudeTodo.list",
+          "group": "navigation"
+        },
+        {
+          "command": "claudeTodo.openFile",
+          "when": "view == claudeTodo.list",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Claude Todo Panel",
+      "properties": {
+        "claudeTodo.file": {
+          "type": "string",
+          "default": ".claude/todos-current.json",
+          "description": "Path (relative to each workspace folder) of the JSON file the hook writes the current todo list to."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "build": "esbuild src/extension.ts --bundle --platform=node --target=node18 --external:vscode --outfile=dist/extension.js",
+    "watch": "npm run build -- --sourcemap --watch",
+    "compile": "tsc -p ./ --noEmit",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.90.0",
+    "@vscode/vsce": "^2.24.0",
+    "esbuild": "^0.21.0",
+    "typescript": "^5.4.0"
+  }
+}
