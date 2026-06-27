@@ -2,10 +2,18 @@
   "name": "claude-todo-panel",
   "displayName": "Claude Todo Panel",
   "description": "A pinned sidebar that shows Claude Code's live todo list, synced from a hook.",
-  "version": "0.0.1",
+  "version": "0.0.6",
   "publisher": "beer",
   "private": true,
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/beerbeatbox/claude-todo-panel.git"
+  },
+  "bugs": {
+    "url": "https://github.com/beerbeatbox/claude-todo-panel/issues"
+  },
+  "homepage": "https://github.com/beerbeatbox/claude-todo-panel#readme",
   "engines": {
     "vscode": "^1.90.0"
   },
@@ -40,9 +48,29 @@
         "icon": "$(refresh)"
       },
       {
+        "command": "claudeTodo.installHook",
+        "title": "Claude Todos: Install Sync Hook",
+        "icon": "$(plug)"
+      },
+      {
+        "command": "claudeTodo.removeHook",
+        "title": "Claude Todos: Remove Sync Hook",
+        "icon": "$(debug-disconnect)"
+      },
+      {
+        "command": "claudeTodo.tidy",
+        "title": "Claude Todos: Clear Finished Chats",
+        "icon": "$(clear-all)"
+      },
+      {
         "command": "claudeTodo.openFile",
         "title": "Claude Todos: Open Source File",
         "icon": "$(go-to-file)"
+      },
+      {
+        "command": "claudeTodo.removeSession",
+        "title": "Claude Todos: Remove This Chat",
+        "icon": "$(trash)"
       }
     ],
     "menus": {
@@ -53,19 +81,46 @@
           "group": "navigation"
         },
         {
-          "command": "claudeTodo.openFile",
+          "command": "claudeTodo.tidy",
           "when": "view == claudeTodo.list",
           "group": "navigation"
+        },
+        {
+          "command": "claudeTodo.installHook",
+          "when": "view == claudeTodo.list",
+          "group": "9_hook@1"
+        },
+        {
+          "command": "claudeTodo.removeHook",
+          "when": "view == claudeTodo.list",
+          "group": "9_hook@2"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "claudeTodo.openFile",
+          "when": "view == claudeTodo.list && viewItem == session",
+          "group": "inline"
+        },
+        {
+          "command": "claudeTodo.removeSession",
+          "when": "view == claudeTodo.list && viewItem == session",
+          "group": "inline"
         }
       ]
     },
     "configuration": {
       "title": "Claude Todo Panel",
       "properties": {
-        "claudeTodo.file": {
+        "claudeTodo.dir": {
           "type": "string",
-          "default": ".claude/todos-current.json",
-          "description": "Path (relative to each workspace folder) of the JSON file the hook writes the current todo list to."
+          "default": ".claude/todos",
+          "description": "Folder (relative to each workspace folder) holding the per-session todo files the hook writes."
+        },
+        "claudeTodo.maxSessions": {
+          "type": "number",
+          "default": 20,
+          "description": "Maximum number of recent chats to show in the panel (newest first)."
         }
       }
     }
