@@ -1,0 +1,43 @@
+name: Release
+
+# Push a version tag to cut a release, e.g.:
+#   npm version patch && git push --follow-tags
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write   # needed to create the GitHub Release
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build & package
+        run: |
+          npm run build
+          npx --yes @vscode/vsce package --out "claude-todo-panel-${GITHUB_REF_NAME#v}.vsix"
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" ./*.vsix --generate-notes --title "$GITHUB_REF_NAME"
+
+      # Optional: publish to Open VSX (the open marketplace used by Cursor,
+      # VSCodium, Windsurf…). Skipped automatically unless you add an OVSX_PAT
+      # secret to the repo. Get a token at https://open-vsx.org → Settings → Access Tokens.
+      - name: Publish to Open VSX
+        if: ${{ env.OVSX_PAT != '' }}
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        run: npx --yes ovsx publish ./*.vsix -p "$OVSX_PAT"
