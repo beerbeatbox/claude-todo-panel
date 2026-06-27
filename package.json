@@ -2,7 +2,7 @@
   "name": "claude-todo-panel",
   "displayName": "Claude Todo Panel",
   "description": "A pinned sidebar that shows Claude Code's live todo list, synced from a hook.",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "publisher": "beer",
   "private": true,
   "license": "MIT",
